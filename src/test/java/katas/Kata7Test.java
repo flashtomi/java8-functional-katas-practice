@@ -1,7 +1,6 @@
 package katas;
 
 import com.google.common.collect.ImmutableMap;
-import model.BoxArt;
 import org.junit.Assert;
 import org.junit.Test;
 
