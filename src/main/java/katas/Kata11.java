@@ -2,10 +2,13 @@ package katas;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import model.BoxArt;
 import util.DataUtil;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.BinaryOperator;
+import java.util.stream.Collectors;
 
 /*
     Goal: Create a datastructure from the given data:
@@ -66,5 +69,25 @@ public class Kata11 {
         return ImmutableList.of(ImmutableMap.of("name", "someName", "videos", ImmutableList.of(
                 ImmutableMap.of("id", 5, "title", "The Chamber", "time", 123, "boxart", "someUrl")
         )));
+    }
+
+    private static Map<Integer, List<Map>> getGroupByListId(List<Map> videos) {
+        return videos.stream().collect(Collectors.groupingBy(video -> (Integer) video.get("listId")));
+    }
+
+    private static List<ImmutableMap<String, Object>> getVideos(List<Map> movies) {
+        return movies.stream()
+                .map(movie -> ImmutableMap.of("id", movie.get("id"), "title", movie.get("title")))
+                .collect(Collectors.toList());
+    }
+
+    private static String getSmallestBoxArtUrl(List<BoxArt> boxArts) {
+        return boxArts.stream().reduce(getSmallerBoxArt).map(BoxArt::getUrl).orElse("");
+    }
+
+    private static BinaryOperator<BoxArt> getSmallerBoxArt = (t, u) -> getBoxArtArea(t) < getBoxArtArea(u) ? t : u;
+
+    private static Integer getBoxArtArea(BoxArt boxArt) {
+        return boxArt.getWidth() * boxArt.getHeight();
     }
 }

@@ -8,6 +8,7 @@ import util.DataUtil;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /*
     Goal: Create a datastructure from the given data:
@@ -54,10 +55,23 @@ public class Kata10 {
     public static List<Map> execute() {
         List<Map> lists = DataUtil.getLists();
         List<Map> videos = DataUtil.getVideos();
+        Map<Integer, List<Map>> movieGroups = getGroupByListId(videos);
 
-        return ImmutableList.of(ImmutableMap.of("name", "someName", "videos", ImmutableList.of(
-                ImmutableMap.of("id", 5, "title", "The Chamber"),
-                ImmutableMap.of("id", 3, "title", "Fracture")
-        )));
+        return lists.stream().map(list -> ImmutableMap.of("name", list.get("name"), "videos", getVideos(movieGroups.get(list.get("id"))))).collect(Collectors.toList());
+
+//        return lists.stream().map(list -> ImmutableMap.of("name", list.get("name"), "videos", videos.stream()
+//                .filter(video -> video.get("listId").toString().equals(list.get("id").toString()))
+//                .map(movie -> ImmutableMap.of("id", movie.get("id"), "title", movie.get("title"))).collect(Collectors.toList()))).collect(Collectors.toList());
+
+    }
+
+    private static Map<Integer, List<Map>> getGroupByListId(List<Map> videos) {
+        return videos.stream().collect(Collectors.groupingBy(video -> (Integer) video.get("listId")));
+    }
+
+    private static List<ImmutableMap<String, Object>> getVideos(List<Map> movies) {
+        return movies.stream()
+                .map(movie -> ImmutableMap.of("id", movie.get("id"), "title", movie.get("title")))
+                .collect(Collectors.toList());
     }
 }
